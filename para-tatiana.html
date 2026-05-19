@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Tatiana 💜 — Tactical Love</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --valo-red: #ff4655;
+            --celestial-purple: #7b61ff;
+            --celestial-blue: #00d4ff;
+            --celestial-pink: #ff69b4;
+            --star-white: #ecdcff;
+            --bg-deep: #050510;
+            --bg-card: rgba(123, 97, 255, 0.06);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-deep);
+            color: #fff;
+            font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ── FIXED BACKGROUND CANVAS ── */
+        #bgCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ── FLOATING HEARTS LAYER ── */
+        .floating-hearts {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .fheart {
+            position: absolute;
+            animation: floatUp linear infinite;
+            opacity: 0;
+            user-select: none;
+        }
+        @keyframes floatUp {
+            0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0.7; }
+            100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
+        }
+
+        /* ── MAIN CONTENT ── */
+        .content { position: relative; z-index: 2; }
+
+        /* ═══════════════════════════
+           HERO SECTION
+        ═══════════════════════════ */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 24px 60px;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Valorant corner brackets */
+        .hero-frame {
+            position: absolute;
+            inset: 24px;
+            pointer-events: none;
+        }
+        .hero-frame::before,
+        .hero-frame::after {
+            content: '';
+            position: absolute;
+            width: 60px; height: 60px;
+            border-color: rgba(123, 97, 255, 0.5);
+            border-style: solid;
+        }
+        .hero-frame::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
+        .hero-frame::after  { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+        .hero-frame-br, .hero-frame-tl {
+            position: absolute;
+            width: 60px; height: 60px;
+            border-color: rgba(0, 212, 255, 0.4);
+            border-style: solid;
+        }
+        .hero-frame-tl { top: 0; right: 0; border-width: 2px 2px 0 0; }
+        .hero-frame-br { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+
+        .agent-badge {
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            letter-spacing: 7px;
+            color: var(--celestial-purple);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            opacity: 0.85;
+            animation: fadeInDown 1s ease both;
+        }
+        .agent-badge span { color: var(--celestial-blue); }
+
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(60px, 14vw, 130px);
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 0.85;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #c9b3ff 0%, #7b61ff 35%, #00d4ff 70%, #ff69b4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 40px rgba(123, 97, 255, 0.7));
+            animation: fadeInUp 1s ease 0.2s both;
+            margin-bottom: 6px;
+        }
+
+        .hero-subtitle {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(14px, 3.5vw, 28px);
+            font-weight: 400;
+            color: var(--celestial-blue);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px var(--celestial-blue), 0 0 40px rgba(0,212,255,0.4);
+            animation: fadeInUp 1s ease 0.4s both;
+            margin-bottom: 50px;
+        }
+
+        /* Divider */
+        .vdivider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            max-width: 560px;
+            margin: 8px 0 40px;
+            animation: fadeIn 1s ease 0.6s both;
+        }
+        .vdivider::before, .vdivider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--celestial-purple) 50%, transparent);
+        }
+        .vdivider-gem {
+            width: 10px; height: 10px;
+            background: var(--celestial-purple);
+            transform: rotate(45deg);
+            box-shadow: 0 0 12px var(--celestial-purple), 0 0 24px rgba(123,97,255,0.4);
+        }
+
+        /* Message cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 18px;
+            max-width: 940px;
+            width: 100%;
+            margin: 0 auto 50px;
+            animation: fadeInUp 1s ease 0.8s both;
+        }
+
+        .mcard {
+            background: var(--bg-card);
+            border: 1px solid rgba(123, 97, 255, 0.25);
+            border-radius: 2px;
+            padding: 26px 24px;
+            text-align: left;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            overflow: hidden;
+        }
+        .mcard::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: linear-gradient(180deg, var(--celestial-purple), var(--celestial-blue));
+        }
+        .mcard::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at center, rgba(123,97,255,0.04) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .mcard:hover {
+            transform: translateY(-6px);
+            border-color: rgba(123, 97, 255, 0.55);
+            box-shadow: 0 16px 40px rgba(123, 97, 255, 0.18), 0 0 0 1px rgba(123,97,255,0.1);
+        }
+        .mcard:hover::after { opacity: 1; }
+
+        .card-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 9px;
+            letter-spacing: 4px;
+            color: var(--celestial-purple);
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .card-text {
+            font-size: 15.5px;
+            line-height: 1.75;
+            color: var(--star-white);
+            font-weight: 300;
+        }
+        .card-text strong { color: var(--celestial-pink); font-weight: 600; }
+        .card-text .stat { color: var(--celestial-blue); font-weight: 600; font-family: 'Orbitron', monospace; font-size: 13px; }
+
+        /* Big love quote */
+        .love-quote {
+            max-width: 720px;
+            width: 100%;
+            margin: 0 auto 70px;
+            animation: fadeIn 1.5s ease 1s both;
+        }
+        .love-quote blockquote {
+            font-size: clamp(16px, 2.8vw, 24px);
+            line-height: 1.7;
+            color: var(--star-white);
+            font-style: italic;
+            font-weight: 300;
+            position: relative;
+            padding: 36px 36px 28px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            background: rgba(0, 212, 255, 0.02);
+        }
+        .love-quote blockquote::before {
+            content: '"';
+            position: absolute;
+            top: -18px; left: 18px;
+            font-size: 90px;
+            color: var(--celestial-purple);
+            opacity: 0.4;
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+        .love-quote .q-author {
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            letter-spacing: 5px;
+            color: var(--celestial-blue);
+            margin-top: 16px;
+            text-align: right;
+            text-transform: uppercase;
+        }
+
+        /* ═══════════════════════════
+           GAME SECTION
+        ═══════════════════════════ */
+        .game-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px 80px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+        .section-tag {
+            font-family: 'Orbitron', monospace;
+            font-size: 9px;
+            letter-spacing: 6px;
+            color: var(--valo-red);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(22px, 5vw, 46px);
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff 0%, var(--celestial-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(123,97,255,0.5));
+        }
+        .section-sub {
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        /* Game wrapper */
+        .game-wrap {
+            position: relative;
+            border: 1px solid rgba(123, 97, 255, 0.35);
+            box-shadow:
+                0 0 40px rgba(123, 97, 255, 0.15),
+                0 0 80px rgba(0, 0, 0, 0.6),
+                inset 0 0 40px rgba(0,0,0,0.4);
+        }
+        .gcorner {
+            position: absolute;
+            width: 18px; height: 18px;
+            border-color: var(--celestial-purple);
+            border-style: solid;
+            z-index: 2;
+        }
+        .gcorner.tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+        .gcorner.tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+        .gcorner.bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+        .gcorner.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+        #gameCanvas { display: block; }
+
+        .game-controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 18px;
+        }
+        .ctrl-chip {
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* ── SCROLL HINT ── */
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 2s ease 2s both;
+            cursor: pointer;
+        }
+        .scroll-hint span {
+            font-family: 'Orbitron', monospace;
+            font-size: 9px;
+            letter-spacing: 4px;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+        }
+        .scroll-arrow {
+            width: 1px; height: 40px;
+            background: linear-gradient(180deg, rgba(123,97,255,0.6), transparent);
+            animation: scrollPulse 1.8s ease-in-out infinite;
+        }
+        @keyframes scrollPulse {
+            0%, 100% { transform: scaleY(1); opacity: 0.6; }
+            50% { transform: scaleY(1.3); opacity: 1; }
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(32px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .cards-grid { grid-template-columns: 1fr; }
+            .love-quote blockquote { padding: 28px 20px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Starfield / Nebula background -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- Ambient floating hearts -->
+<div class="floating-hearts" id="floatingHearts"></div>
+
+<div class="content">
+
+    <!-- ══════════════════ HERO ══════════════════ -->
+    <section class="hero">
+        <div class="hero-frame">
+            <div class="hero-frame-tl"></div>
+            <div class="hero-frame-br"></div>
+        </div>
+
+        <p class="agent-badge">// Protocolo <span>AMOR INFINITO</span> — Versión ∞.∞ — ACTIVO</p>
+
+        <h1 class="hero-title">Tatiana</h1>
+        <p class="hero-subtitle">Mi Agente Favorita del Universo</p>
+
+        <div class="vdivider"><div class="vdivider-gem"></div></div>
+
+        <div class="cards-grid">
+            <div class="mcard">
+                <div class="card-label">// Misión Principal</div>
+                <p class="card-text">
+                    En este vasto universo lleno de agentes y galaxias,
+                    <strong>tú eres mi objetivo más importante</strong>.
+                    Cada día a tu lado es una victoria que ningún rango puede superar.
+                </p>
+            </div>
+
+            <div class="mcard">
+                <div class="card-label">// Habilidad Pasiva</div>
+                <p class="card-text">
+                    Tienes el poder de hacer que mi corazón se acelere
+                    con solo <strong>una sonrisa tuya</strong>.
+                    Es una habilidad legendaria — y solo tú la posees en todo el servidor.
+                </p>
+            </div>
+
+            <div class="mcard">
+                <div class="card-label">// Estadísticas del Corazón</div>
+                <p class="card-text">
+                    Amor por Tatiana: <span class="stat">∞ / ∞</span><br>
+                    Pensamientos de ti: <span class="stat">24/7</span><br>
+                    Sonrisas que me das: <span class="stat">MAX</span><br>
+                    Vida sin ti: <span class="stat">ERROR 404</span>
+                </p>
+            </div>
+
+            <div class="mcard">
+                <div class="card-label">// Mensaje Cifrado del Agente</div>
+                <p class="card-text">
+                    Si existiera un mapa del universo,
+                    <strong>tú serías el punto de inicio y el destino final</strong>.
+                    Contigo, cada ronda de la vida vale completamente la pena.
+                </p>
+            </div>
+        </div>
+
+        <div class="vdivider"><div class="vdivider-gem"></div></div>
+
+        <div class="love-quote">
+            <blockquote>
+                "En un mundo de agentes y estrategias, elegirte a ti no fue una decisión
+                táctica — fue la única elección que mi corazón siempre supo que era
+                correcta. Eres mi mejor compañera de equipo en el juego de la vida,
+                y contigo quiero ganar cada ronda que el universo nos regale."
+            </blockquote>
+            <p class="q-author">— Para Tatiana, con todo mi amor 💜</p>
+        </div>
+
+        <div class="scroll-hint" onclick="document.querySelector('.game-section').scrollIntoView({behavior:'smooth'})">
+            <span>Juega abajo</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- ══════════════════ GAME ══════════════════ -->
+    <section class="game-section">
+        <div class="section-header">
+            <p class="section-tag">// Modo Arcade — Tactical Love</p>
+            <h2 class="section-title">Dispara con el Corazón</h2>
+            <p class="section-sub">Defiende el amor de Tatiana del caos</p>
+        </div>
+
+        <div class="game-wrap">
+            <div class="gcorner tl"></div>
+            <div class="gcorner tr"></div>
+            <div class="gcorner bl"></div>
+            <div class="gcorner br"></div>
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div class="game-controls-row">
+            <span class="ctrl-chip">W / S  o  ↑↓ = Mover</span>
+            <span class="ctrl-chip">Espacio / Click = Disparar</span>
+            <span class="ctrl-chip">Enter = Iniciar</span>
+        </div>
+    </section>
+
+</div><!-- .content -->
+
+<script>
+// ================================================================
+//  BACKGROUND — STARFIELD + NEBULA
+// ================================================================
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx    = bgCanvas.getContext('2d');
+
+function resizeBg() {
+    bgCanvas.width  = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+}
+resizeBg();
+window.addEventListener('resize', resizeBg);
+
+const BG_STARS = [];
+for (let i = 0; i < 220; i++) {
+    BG_STARS.push({
+        x: Math.random() * innerWidth,
+        y: Math.random() * innerHeight,
+        r: Math.random() * 1.8 + 0.3,
+        phase: Math.random() * Math.PI * 2,
+        speed: Math.random() * 0.008 + 0.004,
+        col: ['#ffffff','#c9b3ff','#00d4ff','#ecdcff','#ffb3de'][Math.floor(Math.random()*5)]
+    });
+}
+const NEBULAS = [
+    { rx:0.12, ry:0.18, r:340, c:'rgba(123,97,255,0.045)' },
+    { rx:0.82, ry:0.72, r:420, c:'rgba(0,212,255,0.03)' },
+    { rx:0.55, ry:0.50, r:520, c:'rgba(255,105,180,0.022)' },
+    { rx:0.88, ry:0.10, r:260, c:'rgba(123,97,255,0.05)' },
+    { rx:0.18, ry:0.88, r:370, c:'rgba(0,212,255,0.038)' },
+    { rx:0.40, ry:0.25, r:200, c:'rgba(255,180,100,0.015)' },
+];
+
+function animateBg() {
+    const W = bgCanvas.width, H = bgCanvas.height;
+    bgCtx.clearRect(0,0,W,H);
+    // Deep space fill
+    bgCtx.fillStyle = '#050510';
+    bgCtx.fillRect(0,0,W,H);
+    // Nebulas
+    NEBULAS.forEach(n => {
+        const g = bgCtx.createRadialGradient(n.rx*W, n.ry*H, 0, n.rx*W, n.ry*H, n.r);
+        g.addColorStop(0, n.c);
+        g.addColorStop(1, 'transparent');
+        bgCtx.fillStyle = g;
+        bgCtx.fillRect(0,0,W,H);
+    });
+    // Stars
+    BG_STARS.forEach(s => {
+        s.phase += s.speed;
+        const a = 0.35 + 0.65 * Math.abs(Math.sin(s.phase));
+        bgCtx.globalAlpha = a;
+        bgCtx.fillStyle = s.col;
+        if (s.r > 1.4) { bgCtx.shadowBlur = 7; bgCtx.shadowColor = s.col; }
+        bgCtx.beginPath();
+        bgCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        bgCtx.fill();
+        bgCtx.shadowBlur = 0;
+    });
+    bgCtx.globalAlpha = 1;
+    requestAnimationFrame(animateBg);
+}
+animateBg();
+
+// ================================================================
+//  FLOATING HEARTS
+// ================================================================
+const fhCont   = document.getElementById('floatingHearts');
+const FH_SYMS  = ['💜','✨','💙','⭐','💫','🌟','💗','🔮'];
+
+function spawnFH() {
+    const el = document.createElement('div');
+    el.className = 'fheart';
+    el.textContent = FH_SYMS[Math.floor(Math.random()*FH_SYMS.length)];
+    el.style.left   = Math.random()*100 + 'vw';
+    el.style.fontSize = (Math.random()*14+10) + 'px';
+    const dur = Math.random()*9+9;
+    el.style.animationDuration  = dur + 's';
+    el.style.animationDelay     = Math.random()*4 + 's';
+    fhCont.appendChild(el);
+    setTimeout(() => el.remove(), (dur+5)*1000);
+}
+setInterval(spawnFH, 1400);
+
+// ================================================================
+//  MINI GAME — TACTICAL LOVE
+// ================================================================
+const canvas = document.getElementById('gameCanvas');
+const ctx    = canvas.getContext('2d');
+
+// Responsive sizing
+const BASE_W = 700, BASE_H = 420;
+canvas.width  = BASE_W;
+canvas.height = BASE_H;
+
+function resizeGame() {
+    const maxW = Math.min(BASE_W, window.innerWidth - 48);
+    canvas.style.width  = maxW + 'px';
+    canvas.style.height = (maxW * BASE_H / BASE_W) + 'px';
+}
+resizeGame();
+window.addEventListener('resize', resizeGame);
+
+const GW = BASE_W, GH = BASE_H;
+
+// ── Game state
+let gState   = 'START';
+let score    = 0;
+let hiScore  = 0;
+let gFrame   = 0;
+
+let player = { x:80, y:GH/2, vy:0, speed:5, lives:3, invincible:0, cooldown:0 };
+let bullets   = [];
+let enemies   = [];
+let particles = [];
+let powerups  = [];
+let gStars    = [];
+
+// Internal parallax stars
+for (let i=0; i<90; i++) {
+    gStars.push({
+        x: Math.random()*GW, y: Math.random()*GH,
+        r: Math.random()*1.4+0.3,
+        spd: Math.random()*1.6+0.3,
+        col: ['#fff','#c9b3ff','#00d4ff'][Math.floor(Math.random()*3)],
+        a: Math.random()*0.5+0.2
+    });
+}
+
+// ── Keys
+const keys = {};
+document.addEventListener('keydown', e => {
+    keys[e.code] = true;
+    if (e.code === 'Space') { e.preventDefault(); handleAction(); }
+    if (e.code === 'Enter') { handleAction(); }
+});
+document.addEventListener('keyup', e => { keys[e.code] = false; });
+canvas.addEventListener('click', handleAction);
+
+function handleAction() {
+    if (gState === 'PLAYING') tryShoot();
+    else startGame();
+}
+
+// ── Start / Reset
+function startGame() {
+    gState = 'PLAYING'; score = 0; gFrame = 0;
+    player.y = GH/2; player.vy = 0; player.lives = 3;
+    player.invincible = 0; player.cooldown = 0;
+    bullets = []; enemies = []; particles = []; powerups = [];
+}
+
+// ── Shooting
+function tryShoot() {
+    if (player.cooldown > 0) return;
+    player.cooldown = 14;
+    const multi = score >= 600;
+    pushBullet(player.x+20, player.y, 0, 9);
+    if (multi) {
+        pushBullet(player.x+16, player.y-14, -1.2, 8.4);
+        pushBullet(player.x+16, player.y+14,  1.2, 8.4);
+    }
+}
+function pushBullet(x, y, vy, spd) {
+    bullets.push({ x, y, vy, speed: spd });
+}
+
+// ── Spawn enemies
+function spawnEnemy() {
+    const lvl = Math.floor(score/350);
+    let type = 'drone';
+    const r = Math.random();
+    if (score > 200 && r < 0.30) type = 'speeder';
+    if (score > 550 && r < 0.15) type = 'tank';
+
+    const CFG = {
+        drone:   { w:38, h:38, hp:2, spd:1.6+lvl*0.18, col:'#ff4655', pts:10 },
+        speeder: { w:30, h:30, hp:1, spd:3.0+lvl*0.20, col:'#ff8800', pts:20 },
+        tank:    { w:50, h:50, hp:5, spd:0.85,           col:'#aa0022', pts:50 },
+    };
+    const c = CFG[type];
+    enemies.push({
+        x: GW + c.w + 5,
+        y: Math.random()*(GH-100)+50,
+        w:c.w, h:c.h, hp:c.hp, maxHp:c.hp,
+        speed:c.spd, col:c.col, pts:c.pts, type,
+        angle: 0,
+        wobble: Math.random()*Math.PI*2,
+        wSpd: Math.random()*0.035+0.012,
+        dead: false
+    });
+}
+
+function spawnPowerup() {
+    powerups.push({
+        x: GW+20,
+        y: Math.random()*(GH-100)+50,
+        speed: 1.6,
+        collected: false
+    });
+}
+
+// ── Particles
+function burst(x, y, col, n=12) {
+    for (let i=0; i<n; i++) {
+        const a = (Math.PI*2/n)*i + Math.random()*0.6;
+        const spd = Math.random()*3.2+0.8;
+        particles.push({
+            x, y,
+            vx: Math.cos(a)*spd,
+            vy: Math.sin(a)*spd,
+            life: 1,
+            decay: Math.random()*0.025+0.018,
+            size: Math.random()*6+2,
+            col,
+            emoji: Math.random()<0.35 ? (Math.random()<0.5 ? '💜' : '✨') : null
+        });
+    }
+}
+
+// ── Draw helpers
+function drawPlayer(px, py, inv) {
+    if (inv>0 && Math.floor(inv/4)%2===0) return;
+    ctx.save();
+    ctx.shadowBlur = 18; ctx.shadowColor = '#7b61ff';
+
+    // Body
+    ctx.fillStyle = '#1a0a3a';
+    ctx.fillRect(px-16, py-20, 32, 40);
+
+    // Side stripes
+    ctx.fillStyle = '#7b61ff';
+    ctx.fillRect(px-16, py-20, 4, 40);
+    ctx.fillRect(px+12,  py-20, 4, 40);
+
+    // Chest glow
+    const cg = ctx.createRadialGradient(px, py-4, 0, px, py-4, 11);
+    cg.addColorStop(0, 'rgba(0,212,255,0.95)');
+    cg.addColorStop(1, 'rgba(0,212,255,0)');
+    ctx.fillStyle = cg;
+    ctx.beginPath(); ctx.arc(px, py-4, 10, 0, Math.PI*2); ctx.fill();
+
+    // Head
+    ctx.shadowColor = '#ecdcff';
+    ctx.fillStyle = '#2a1a5a';
+    ctx.beginPath(); ctx.arc(px, py-29, 12, 0, Math.PI*2); ctx.fill();
+
+    // Visor
+    ctx.fillStyle = '#00d4ff';
+    ctx.shadowColor = '#00d4ff'; ctx.shadowBlur = 10;
+    ctx.fillRect(px-9, py-34, 18, 7);
+
+    // Gun
+    ctx.shadowColor = '#c9b3ff'; ctx.shadowBlur = 8;
+    ctx.fillStyle = '#c9b3ff';
+    ctx.fillRect(px+12, py-2, 26, 5);
+    ctx.fillStyle = '#7b61ff';
+    ctx.fillRect(px+32, py-4, 7, 9);
+
+    ctx.restore();
+}
+
+function drawEnemy(e) {
+    ctx.save();
+    ctx.translate(e.x, e.y);
+
+    if (e.type === 'speeder') {
+        ctx.rotate(e.angle*2);
+        ctx.shadowBlur = 14; ctx.shadowColor = '#ff8800';
+        ctx.fillStyle = '#993300';
+        ctx.beginPath();
+        ctx.moveTo(0, -e.h/2);
+        ctx.lineTo(e.w/2, 0);
+        ctx.lineTo(0, e.h/2);
+        ctx.lineTo(-e.w/2, 0);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#ffaa33'; ctx.lineWidth = 2; ctx.stroke();
+        // Core
+        ctx.fillStyle = '#ffdd00';
+        ctx.shadowColor = '#ffdd00'; ctx.shadowBlur = 8;
+        ctx.beginPath(); ctx.arc(0,0, 5, 0, Math.PI*2); ctx.fill();
+
+    } else if (e.type === 'tank') {
+        ctx.rotate(e.angle*0.3);
+        ctx.shadowBlur = 18; ctx.shadowColor = '#aa0022';
+        ctx.fillStyle = '#550011';
+        ctx.beginPath();
+        for (let i=0; i<6; i++) {
+            const a = (Math.PI/3)*i - Math.PI/6;
+            const r = e.w/2;
+            i===0 ? ctx.moveTo(Math.cos(a)*r, Math.sin(a)*r)
+                  : ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+        }
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#ff4655'; ctx.lineWidth = 2.5; ctx.stroke();
+        // HP bar
+        const bw=46, bh=5, bx=-bw/2, by=e.h/2+7;
+        ctx.fillStyle='rgba(0,0,0,0.6)';
+        ctx.fillRect(bx, by, bw, bh);
+        ctx.fillStyle = e.hp/e.maxHp > 0.5 ? '#00ff88' : '#ff4655';
+        ctx.shadowBlur = 0;
+        ctx.fillRect(bx, by, bw*(e.hp/e.maxHp), bh);
+        // Core
+        ctx.shadowBlur = 12; ctx.shadowColor = '#ff4655';
+        ctx.fillStyle = '#ff4655';
+        ctx.beginPath(); ctx.arc(0,0, 9, 0, Math.PI*2); ctx.fill();
+
+    } else {
+        // Drone
+        ctx.rotate(e.angle);
+        ctx.shadowBlur = 14; ctx.shadowColor = '#ff4655';
+        ctx.fillStyle = '#280008';
+        ctx.fillRect(-e.w/2, -e.h/2, e.w, e.h);
+        ctx.strokeStyle = '#ff4655'; ctx.lineWidth = 2;
+        ctx.strokeRect(-e.w/2, -e.h/2, e.w, e.h);
+        // X face
+        ctx.strokeStyle = '#ff8899'; ctx.lineWidth = 2.5;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.moveTo(-9,-9); ctx.lineTo(9,9);
+        ctx.moveTo(9,-9);  ctx.lineTo(-9,9);
+        ctx.stroke();
+        // Corner marks
+        ctx.strokeStyle = 'rgba(255,68,85,0.5)'; ctx.lineWidth = 1; ctx.shadowBlur=0;
+        const m=3, hw=e.w/2, hh=e.h/2;
+        [[−hw,−hh],[hw,−hh],[−hw,hh],[hw,hh]].forEach(([cx,cy]) => {
+            ctx.strokeRect(cx-m, cy-m, m*2, m*2);
+        });
+    }
+    ctx.restore();
+}
+
+function drawBullet(b) {
+    ctx.save();
+    ctx.shadowBlur = 12; ctx.shadowColor = '#ff69b4';
+    ctx.font = '17px serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('💗', b.x, b.y);
+    ctx.restore();
+}
+
+function drawHUD() {
+    // Bar
+    ctx.fillStyle = 'rgba(5,5,16,0.75)';
+    ctx.fillRect(0, 0, GW, 38);
+    // Bottom bar
+    ctx.fillRect(0, GH-28, GW, 28);
+
+    // Score
+    ctx.textAlign = 'left';
+    ctx.font = '9px Orbitron, monospace';
+    ctx.fillStyle = 'rgba(201,179,255,0.7)';
+    ctx.fillText('SCORE', 14, 14);
+    ctx.font = 'bold 15px Orbitron, monospace';
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowBlur = 6; ctx.shadowColor = '#7b61ff';
+    ctx.fillText(String(score).padStart(6,'0'), 14, 30);
+    ctx.shadowBlur = 0;
+
+    // Hi-score
+    ctx.textAlign = 'center';
+    ctx.font = '9px Orbitron, monospace';
+    ctx.fillStyle = 'rgba(123,97,255,0.8)';
+    ctx.fillText('BEST', GW/2, 14);
+    ctx.font = 'bold 13px Orbitron, monospace';
+    ctx.fillStyle = '#c9b3ff';
+    ctx.fillText(String(hiScore).padStart(6,'0'), GW/2, 30);
+
+    // Lives
+    ctx.textAlign = 'right';
+    ctx.font = '18px serif';
+    let lStr = '';
+    for (let i=0; i<player.lives; i++) lStr += '💜';
+    ctx.fillText(lStr, GW-12, 28);
+
+    // Multishot badge
+    if (score >= 600) {
+        ctx.textAlign = 'center';
+        ctx.font = '9px Orbitron, monospace';
+        ctx.fillStyle = '#00d4ff';
+        ctx.shadowBlur = 8; ctx.shadowColor = '#00d4ff';
+        ctx.fillText('✦  TRIPLE SHOT  ACTIVO  ✦', GW/2, GH-10);
+        ctx.shadowBlur = 0;
+    }
+}
+
+function drawStartScreen() {
+    ctx.fillStyle = 'rgba(5,5,16,0.88)';
+    ctx.fillRect(0,0,GW,GH);
+
+    ctx.save();
+    ctx.textAlign = 'center';
+
+    // Logo glow behind title
+    const grd = ctx.createRadialGradient(GW/2, GH/2-60, 0, GW/2, GH/2-60, 180);
+    grd.addColorStop(0,'rgba(123,97,255,0.18)');
+    grd.addColorStop(1,'transparent');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0,0,GW,GH);
+
+    // Title
+    ctx.font = 'bold 42px Orbitron, monospace';
+    ctx.fillStyle = '#7b61ff';
+    ctx.shadowBlur = 28; ctx.shadowColor = '#7b61ff';
+    ctx.fillText('TACTICAL LOVE', GW/2, GH/2-70);
+
+    ctx.shadowBlur = 0;
+    ctx.font = '13px Orbitron, monospace';
+    ctx.fillStyle = '#c9b3ff';
+    ctx.fillText('Un juego para Tatiana  💜', GW/2, GH/2-36);
+
+    ctx.font = '11px Rajdhani, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillText('Dispara corazones — Defiende el amor — Desbloquea Triple Shot a 600 pts', GW/2, GH/2);
+
+    // Pulsing CTA
+    const pulse = 0.45 + 0.55*Math.abs(Math.sin(gFrame*0.045));
+    ctx.globalAlpha = pulse;
+    ctx.font = 'bold 15px Orbitron, monospace';
+    ctx.fillStyle = '#00d4ff';
+    ctx.shadowBlur = 12; ctx.shadowColor = '#00d4ff';
+    ctx.fillText('[ CLICK  o  ENTER  para comenzar ]', GW/2, GH/2+44);
+    ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+
+    ctx.font = '11px Rajdhani, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.fillText('W/S  o  ↑↓ = Mover  |  ESPACIO / CLICK = Disparar', GW/2, GH/2+74);
+
+    ctx.restore();
+}
+
+function drawGameOver() {
+    ctx.fillStyle = 'rgba(5,5,16,0.92)';
+    ctx.fillRect(0,0,GW,GH);
+    ctx.save();
+    ctx.textAlign = 'center';
+
+    ctx.font = 'bold 52px Orbitron, monospace';
+    ctx.fillStyle = '#ff4655';
+    ctx.shadowBlur = 30; ctx.shadowColor = '#ff4655';
+    ctx.fillText('GAME OVER', GW/2, GH/2-72);
+
+    ctx.shadowBlur = 0;
+    ctx.font = '18px Orbitron, monospace';
+    ctx.fillStyle = '#c9b3ff';
+    ctx.fillText('PUNTUACIÓN:  ' + score, GW/2, GH/2-26);
+
+    if (score > 0 && score >= hiScore) {
+        ctx.font = 'bold 13px Orbitron, monospace';
+        ctx.fillStyle = '#ffdd00';
+        ctx.shadowBlur = 12; ctx.shadowColor = '#ffdd00';
+        ctx.fillText('✦  NUEVO RÉCORD  ✦', GW/2, GH/2+12);
+        ctx.shadowBlur = 0;
+    }
+
+    ctx.font = '13px Rajdhani, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('Tatiana te espera en el siguiente intento  💜', GW/2, GH/2+44);
+
+    const pulse = 0.45 + 0.55*Math.abs(Math.sin(gFrame*0.055));
+    ctx.globalAlpha = pulse;
+    ctx.font = 'bold 14px Orbitron, monospace';
+    ctx.fillStyle = '#00d4ff';
+    ctx.shadowBlur = 10; ctx.shadowColor = '#00d4ff';
+    ctx.fillText('[ CLICK  o  ENTER  para reintentar ]', GW/2, GH/2+90);
+    ctx.globalAlpha = 1;
+
+    ctx.restore();
+}
+
+// ── Main loop
+function gameLoop() {
+    gFrame++;
+    ctx.clearRect(0,0,GW,GH);
+
+    // Parallax stars inside game canvas
+    ctx.save();
+    gStars.forEach(s => {
+        if (gState === 'PLAYING') { s.x -= s.spd; if (s.x < 0) { s.x=GW; s.y=Math.random()*GH; } }
+        ctx.globalAlpha = s.a;
+        ctx.fillStyle   = s.col;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    if (gState === 'START') {
+        drawStartScreen();
+
+    } else if (gState === 'GAMEOVER') {
+        enemies.forEach(drawEnemy);
+        bullets.forEach(drawBullet);
+        drawPlayer(player.x, player.y, player.invincible);
+        drawHUD();
+        drawGameOver();
+
+    } else {
+        // ── Move player
+        if ((keys['ArrowUp']   || keys['KeyW']) && player.y > 50)       player.y -= player.speed;
+        if ((keys['ArrowDown'] || keys['KeyS']) && player.y < GH-32)    player.y += player.speed;
+        if ((keys['Space'] || keys['KeyZ']) && gState==='PLAYING')       tryShoot();
+
+        if (player.cooldown   > 0) player.cooldown--;
+        if (player.invincible > 0) player.invincible--;
+
+        // ── Spawn
+        const spawnInterval = Math.max(38, 95 - Math.floor(score/120)*4);
+        if (gFrame % spawnInterval === 0) spawnEnemy();
+        if (gFrame % 680 === 0) spawnPowerup();
+
+        // ── Update bullets
+        bullets = bullets.filter(b => b.x < GW+30);
+        bullets.forEach(b => { b.x += b.speed; b.y += b.vy; });
+
+        // ── Update enemies + collisions
+        enemies.forEach(e => {
+            e.x -= e.speed;
+            e.wobble += e.wSpd;
+            if (e.type !== 'tank') e.y += Math.sin(e.wobble) * 0.9;
+            e.angle += 0.022;
+
+            // Bullet hits
+            bullets.forEach(b => {
+                if (b.hit) return;
+                const dx = Math.abs(b.x - e.x), dy = Math.abs(b.y - e.y);
+                if (dx < e.w/2+10 && dy < e.h/2+10) {
+                    b.hit = true;
+                    e.hp--;
+                    burst(b.x, b.y, '#ff69b4', 5);
+                    if (e.hp <= 0) {
+                        burst(e.x, e.y, e.type==='tank' ? '#ff4655' : '#7b61ff', 16);
+                        score += e.pts;
+                        if (score > hiScore) hiScore = score;
+                        e.dead = true;
+                    }
+                }
+            });
+
+            // Player collision
+            if (player.invincible === 0) {
+                const dx = Math.abs(e.x - player.x), dy = Math.abs(e.y - player.y);
+                if (dx < e.w/2+14 && dy < e.h/2+18) {
+                    player.lives--;
+                    player.invincible = 130;
+                    burst(player.x, player.y, '#7b61ff', 10);
+                    e.dead = true;
+                    if (player.lives <= 0) gState = 'GAMEOVER';
+                }
+            }
+        });
+
+        bullets  = bullets.filter(b => !b.hit);
+        enemies  = enemies.filter(e => !e.dead && e.x > -e.w-5);
+
+        // ── Powerups
+        powerups.forEach(p => {
+            p.x -= p.speed;
+            if (Math.abs(p.x-player.x)<32 && Math.abs(p.y-player.y)<32) {
+                player.lives = Math.min(player.lives+1, 5);
+                burst(p.x, p.y, '#ff69b4', 14);
+                p.collected = true;
+            }
+        });
+        powerups = powerups.filter(p => !p.collected && p.x > -30);
+
+        // ── Update particles
+        particles.forEach(p => {
+            p.x += p.vx; p.y += p.vy;
+            p.vx *= 0.94; p.vy *= 0.94;
+            p.life -= p.decay;
+        });
+        particles = particles.filter(p => p.life > 0);
+
+        // ── Draw
+        enemies.forEach(drawEnemy);
+
+        powerups.forEach(p => {
+            ctx.save();
+            ctx.font = '22px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.shadowBlur=18; ctx.shadowColor='#ff69b4';
+            ctx.fillText('💝', p.x, p.y);
+            ctx.restore();
+        });
+
+        bullets.forEach(drawBullet);
+
+        particles.forEach(p => {
+            ctx.save();
+            ctx.globalAlpha = p.life;
+            if (p.emoji) {
+                ctx.font = p.size+'px serif';
+                ctx.textAlign='center'; ctx.textBaseline='middle';
+                ctx.fillText(p.emoji, p.x, p.y);
+            } else {
+                ctx.fillStyle = p.col;
+                ctx.shadowBlur=8; ctx.shadowColor=p.col;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+            }
+            ctx.restore();
+        });
+
+        drawPlayer(player.x, player.y, player.invincible);
+        drawHUD();
+    }
+
+    requestAnimationFrame(gameLoop);
+}
+gameLoop();
+</script>
+</body>
+</html>
