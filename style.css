@@ -1,6 +1,7 @@
 /* ============================================================
    Connect 5 Solver UI — style.css
    Dark theme, professional game-analysis aesthetic
+   9 columns × 7 rows board, 300px side panel
    ============================================================ */
 
 /* ----------------------------------------------------------
@@ -13,45 +14,54 @@
 }
 
 :root {
-  /* Palette */
-  --bg-app:          #0e1520;
-  --bg-panel:        #131d2e;
-  --bg-panel-inner:  #1a2438;
-  --bg-board:        #1a2744;
-  --bg-cell-empty:   #0d1b2e;
+  /* ---------- Palette ---------- */
+  --bg-app:            #0e1520;
+  --bg-panel:          #131d2e;
+  --bg-panel-inner:    #1a2438;
+  --bg-board:          #1a2744;
+  --bg-cell-empty:     #0d1b2e;
 
-  --color-p1:        #e74c3c;
-  --color-p1-light:  #ff6b5b;
-  --color-p1-dark:   #c0392b;
+  --color-p1:          #e74c3c;   /* red / coral  */
+  --color-p1-light:    #ff6b5b;
+  --color-p1-dark:     #c0392b;
 
-  --color-p2:        #f1c40f;
-  --color-p2-light:  #ffe135;
-  --color-p2-dark:   #d4ac0d;
+  --color-p2:          #f1c40f;   /* yellow       */
+  --color-p2-light:    #ffe135;
+  --color-p2-dark:     #d4ac0d;
 
-  --color-best:      #27ae60;
-  --color-best-glow: rgba(39, 174, 96, 0.55);
+  --color-best:        #27ae60;
+  --color-best-glow:   rgba(39, 174, 96, 0.55);
 
-  --color-win-glow-p1: rgba(231, 76, 60, 0.8);
+  --color-win-glow-p1: rgba(231, 76,  60, 0.8);
   --color-win-glow-p2: rgba(241, 196, 15, 0.8);
 
-  --accent-blue:     #2e86de;
-  --accent-blue-dk:  #1a6abf;
-  --accent-blue-lt:  #54a0ff;
+  --accent-blue:       #2e86de;
+  --accent-blue-dk:    #1a6abf;
+  --accent-blue-lt:    #54a0ff;
 
-  --text-primary:    #e8eaf0;
-  --text-secondary:  #8a9bb5;
-  --text-muted:      #4a5a72;
-  --text-label:      #6b7f9e;
+  --text-primary:      #e8eaf0;
+  --text-secondary:    #8a9bb5;
+  --text-muted:        #4a5a72;
+  --text-label:        #6b7f9e;
 
-  --border-subtle:   rgba(255,255,255,0.06);
-  --border-panel:    rgba(255,255,255,0.10);
-  --shadow-depth:    0 8px 32px rgba(0,0,0,0.55);
+  --border-subtle:     rgba(255, 255, 255, 0.06);
+  --border-panel:      rgba(255, 255, 255, 0.10);
+  --shadow-depth:      0 8px 32px rgba(0, 0, 0, 0.55);
 
-  /* Sizing */
-  --cell-size:       64px;
-  --cell-gap:        8px;
-  --panel-width:     300px;
-  --border-radius:   10px;
+  /* ---------- Sizing ---------- */
+  --cell-size:         64px;
+  --cell-gap:          8px;
+  --panel-width:       300px;
+  --board-cols:        9;
+  --board-rows:        7;
+  --border-radius:     10px;
+
+  /* Derived board width (9 cells + 8 gaps + 2×10px padding) */
+  --board-inner-width: calc(
+    var(--board-cols) * var(--cell-size) +
+    (var(--board-cols) - 1) * var(--cell-gap) +
+    20px
+  );
 }
 
 html, body {
@@ -62,17 +72,17 @@ html, body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ----------------------------------------------------------
-   App Shell
+   App Shell — side panel left, board area right
    ---------------------------------------------------------- */
 .app-container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   min-height: 100vh;
-  gap: 0;
 }
 
 /* ----------------------------------------------------------
@@ -87,51 +97,60 @@ html, body {
   border-right: 1px solid var(--border-panel);
   display: flex;
   flex-direction: column;
-  gap: 0;
-  box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
   overflow-y: auto;
   overflow-x: hidden;
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
 }
 
+/* ---------- Panel header ---------- */
 .panel-header {
   padding: 22px 20px 16px;
   border-bottom: 1px solid var(--border-subtle);
   background: linear-gradient(135deg, #0f1c30 0%, #14233a 100%);
+  flex-shrink: 0;
 }
 
 .panel-header h1 {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
 }
 
+/* Dual-color bullet before the title */
 .panel-header h1::before {
   content: '';
   display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-p1), var(--color-p2));
-  box-shadow: 0 0 8px rgba(241,196,15,0.5);
+  background: conic-gradient(
+    var(--color-p1) 0deg 180deg,
+    var(--color-p2) 180deg 360deg
+  );
+  box-shadow: 0 0 8px rgba(241, 196, 15, 0.45);
   flex-shrink: 0;
 }
 
 .panel-header p {
   font-size: 11px;
   color: var(--text-muted);
-  margin-top: 3px;
-  letter-spacing: 0.06em;
+  margin-top: 4px;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
-/* Panel sections */
+/* ---------- Generic panel sections ---------- */
 .panel-section {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
 }
 
 .panel-section:last-child {
@@ -141,7 +160,7 @@ html, body {
 .section-title {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 12px;
@@ -158,25 +177,40 @@ html, body {
   border-radius: var(--border-radius);
   background: var(--bg-panel-inner);
   border: 1px solid var(--border-subtle);
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.turn-indicator.p1-turn {
+  border-color: rgba(231, 76, 60, 0.30);
+  background: rgba(231, 76, 60, 0.05);
+}
+
+.turn-indicator.p2-turn {
+  border-color: rgba(241, 196, 15, 0.30);
+  background: rgba(241, 196, 15, 0.04);
 }
 
 .turn-dot {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 8px rgba(0,0,0,0.4);
-  transition: background 0.3s, box-shadow 0.3s;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .turn-dot.p1 {
-  background: radial-gradient(circle at 35% 35%, var(--color-p1-light), var(--color-p1-dark));
+  background: radial-gradient(circle at 35% 32%,
+    var(--color-p1-light),
+    var(--color-p1) 55%,
+    var(--color-p1-dark));
   box-shadow: 0 0 10px var(--color-win-glow-p1);
 }
 
 .turn-dot.p2 {
-  background: radial-gradient(circle at 35% 35%, var(--color-p2-light), var(--color-p2-dark));
+  background: radial-gradient(circle at 35% 32%,
+    var(--color-p2-light),
+    var(--color-p2) 55%,
+    var(--color-p2-dark));
   box-shadow: 0 0 10px var(--color-win-glow-p2);
 }
 
@@ -190,6 +224,7 @@ html, body {
   font-size: 11px;
   color: var(--text-secondary);
   margin-left: auto;
+  white-space: nowrap;
 }
 
 /* ----------------------------------------------------------
@@ -200,110 +235,69 @@ html, body {
   border-radius: var(--border-radius);
   background: var(--bg-panel-inner);
   border: 1px solid var(--border-subtle);
-  min-height: 38px;
+  min-height: 40px;
   font-size: 13px;
   color: var(--text-secondary);
-  line-height: 1.4;
-  transition: all 0.3s ease;
+  line-height: 1.45;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
 .status-message.info {
-  border-color: rgba(46,134,222,0.35);
+  border-color: rgba(46, 134, 222, 0.35);
   color: var(--accent-blue-lt);
-  background: rgba(46,134,222,0.08);
+  background: rgba(46, 134, 222, 0.08);
 }
 
 .status-message.success {
-  border-color: rgba(39,174,96,0.35);
+  border-color: rgba(39, 174, 96, 0.35);
   color: #2ecc71;
-  background: rgba(39,174,96,0.08);
+  background: rgba(39, 174, 96, 0.08);
 }
 
 .status-message.warning {
-  border-color: rgba(241,196,15,0.35);
+  border-color: rgba(241, 196, 15, 0.35);
   color: var(--color-p2);
-  background: rgba(241,196,15,0.07);
+  background: rgba(241, 196, 15, 0.06);
 }
 
 .status-message.error {
-  border-color: rgba(231,76,60,0.35);
+  border-color: rgba(231, 76, 60, 0.35);
   color: var(--color-p1-light);
-  background: rgba(231,76,60,0.08);
+  background: rgba(231, 76, 60, 0.08);
 }
 
 /* ----------------------------------------------------------
-   Engine Info
+   Engine Info  (depth, nodes, time, score)
    ---------------------------------------------------------- */
-.engine-info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
 
-.info-stat {
-  background: var(--bg-panel-inner);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  padding: 9px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.info-stat-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.info-stat-value {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-}
-
-.info-stat-value.positive {
-  color: #2ecc71;
-}
-
-.info-stat-value.negative {
-  color: var(--color-p1-light);
-}
-
-.info-stat-value.neutral {
-  color: var(--accent-blue-lt);
-}
-
-/* Thinking spinner inside engine info */
+/* Thinking banner — shown while engine is running */
 .engine-thinking {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
   border-radius: 8px;
-  background: rgba(46,134,222,0.08);
-  border: 1px solid rgba(46,134,222,0.2);
-  margin-bottom: 8px;
+  background: rgba(46, 134, 222, 0.07);
+  border: 1px solid rgba(46, 134, 222, 0.20);
+  margin-bottom: 10px;
   opacity: 0;
-  transition: opacity 0.3s ease;
   pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
 .engine-thinking.visible {
   opacity: 1;
+  pointer-events: auto;
 }
 
+/* Spinner */
 .spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(84,160,255,0.2);
+  border: 2px solid rgba(84, 160, 255, 0.18);
   border-top-color: var(--accent-blue-lt);
   border-radius: 50%;
-  animation: spin 0.75s linear infinite;
+  animation: spin 0.72s linear infinite;
   flex-shrink: 0;
 }
 
@@ -318,20 +312,60 @@ html, body {
   letter-spacing: 0.04em;
 }
 
+/* 2×2 grid of stat cards */
+.engine-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.info-stat {
+  background: var(--bg-panel-inner);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.info-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.info-stat-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-stat-value.positive { color: #2ecc71; }
+.info-stat-value.negative { color: var(--color-p1-light); }
+.info-stat-value.neutral  { color: var(--accent-blue-lt); }
+
 /* ----------------------------------------------------------
-   Principal Variation
+   Principal Variation Display
    ---------------------------------------------------------- */
 .pv-box {
   background: var(--bg-panel-inner);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   padding: 10px 12px;
-  min-height: 48px;
+  min-height: 52px;
   font-size: 12px;
   font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
   color: var(--text-secondary);
   word-break: break-all;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
 .pv-box .pv-move {
@@ -339,21 +373,27 @@ html, body {
   padding: 1px 5px;
   margin: 1px 2px;
   border-radius: 4px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
   cursor: default;
-  transition: background 0.15s;
+  transition: background 0.15s ease;
 }
 
 .pv-box .pv-move:hover {
-  background: rgba(46,134,222,0.2);
+  background: rgba(46, 134, 222, 0.20);
   color: var(--accent-blue-lt);
 }
 
 .pv-box .pv-move.best {
-  background: rgba(39,174,96,0.18);
+  background: rgba(39, 174, 96, 0.18);
   color: #2ecc71;
   font-weight: 600;
+}
+
+.pv-box.empty::before {
+  content: 'No analysis yet.';
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* ----------------------------------------------------------
@@ -384,10 +424,16 @@ html, body {
   font-family: inherit;
   cursor: pointer;
   letter-spacing: 0.03em;
-  transition: background 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.1s;
+  transition:
+    background   0.15s ease,
+    box-shadow   0.15s ease,
+    opacity      0.15s ease,
+    transform    0.10s ease;
   user-select: none;
   white-space: nowrap;
   flex: 1;
+  text-align: center;
+  line-height: 1;
 }
 
 .btn:active:not(:disabled) {
@@ -399,80 +445,95 @@ html, body {
   outline-offset: 2px;
 }
 
-/* Primary */
+/* --- Primary (Analyze, Auto-play) --- */
 .btn-primary {
   background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-dk) 100%);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(46,134,222,0.35);
+  box-shadow: 0 2px 8px rgba(46, 134, 222, 0.35);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, var(--accent-blue-lt) 0%, var(--accent-blue) 100%);
-  box-shadow: 0 4px 16px rgba(84,160,255,0.45);
+  box-shadow: 0 4px 16px rgba(84, 160, 255, 0.45);
 }
 
-/* Success / Analyze */
+/* --- Success / Analyze --- */
 .btn-success {
   background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(39,174,96,0.35);
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.35);
 }
 
 .btn-success:hover:not(:disabled) {
   background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-  box-shadow: 0 4px 16px rgba(46,204,113,0.4);
+  box-shadow: 0 4px 16px rgba(46, 204, 113, 0.40);
 }
 
-/* Secondary / Neutral */
+/* --- Secondary / Neutral (Undo, New Game) --- */
 .btn-secondary {
   background: var(--bg-panel-inner);
   color: var(--text-secondary);
   border: 1px solid var(--border-panel);
+  box-shadow: none;
 }
 
 .btn-secondary:hover:not(:disabled) {
   background: #1f3050;
   color: var(--text-primary);
-  border-color: rgba(255,255,255,0.18);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
-/* Danger */
+/* --- Danger (Reset) --- */
 .btn-danger {
   background: linear-gradient(135deg, #c0392b 0%, #922b21 100%);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(192,57,43,0.35);
+  box-shadow: 0 2px 8px rgba(192, 57, 43, 0.35);
 }
 
 .btn-danger:hover:not(:disabled) {
   background: linear-gradient(135deg, var(--color-p1) 0%, #c0392b 100%);
-  box-shadow: 0 4px 16px rgba(231,76,60,0.4);
+  box-shadow: 0 4px 16px rgba(231, 76, 60, 0.40);
 }
 
-/* Warning */
+/* --- Warning --- */
 .btn-warning {
   background: linear-gradient(135deg, #d4ac0d 0%, #a08509 100%);
   color: #1a1000;
-  box-shadow: 0 2px 8px rgba(212,172,13,0.3);
+  box-shadow: 0 2px 8px rgba(212, 172, 13, 0.30);
 }
 
 .btn-warning:hover:not(:disabled) {
   background: linear-gradient(135deg, var(--color-p2) 0%, #d4ac0d 100%);
-  box-shadow: 0 4px 16px rgba(241,196,15,0.35);
+  box-shadow: 0 4px 16px rgba(241, 196, 15, 0.35);
 }
 
-/* Disabled */
+/* --- Disabled state --- */
 .btn:disabled,
 .btn[aria-disabled="true"] {
-  opacity: 0.35;
+  opacity: 0.32;
   cursor: not-allowed;
   box-shadow: none;
-  filter: grayscale(40%);
+  filter: grayscale(45%);
+  transform: none !important;
 }
 
-/* Icon inside button */
+/* Small icon/glyph inside button */
 .btn-icon {
   font-size: 14px;
   line-height: 1;
+  flex-shrink: 0;
+}
+
+/* --- Auto-play active state (purple toggle) --- */
+.btn-autoplay.active {
+  background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+  box-shadow: 0 2px 10px rgba(142, 68, 173, 0.40);
+  color: #fff;
+}
+
+.btn-autoplay.active:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+  box-shadow: 0 4px 16px rgba(155, 89, 182, 0.50);
 }
 
 /* ----------------------------------------------------------
@@ -484,7 +545,7 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 32px 24px 24px;
+  padding: 32px 28px 32px;
   min-height: 100vh;
   overflow-x: auto;
 }
@@ -494,15 +555,43 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: 0;
+  /* prevent the inner from being narrower than the board */
+  min-width: calc(var(--board-inner-width) + 24px);
 }
 
-/* Column labels (optional, A–I) */
+/* ---------- Optional game-info bar above board ---------- */
+.board-topbar {
+  width: 100%;
+  max-width: calc(var(--board-inner-width) + 24px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.board-topbar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.board-topbar-move {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+/* ---------- Column labels (A – I, above arrows) ---------- */
 .board-col-labels {
   display: grid;
-  grid-template-columns: repeat(9, var(--cell-size));
+  grid-template-columns: repeat(var(--board-cols), var(--cell-size));
   gap: var(--cell-gap);
-  margin-bottom: 6px;
-  padding: 0 4px;
+  margin-bottom: 5px;
+  /* align with the grid's inner padding (10px board + 12px wrapper) */
+  padding: 0 22px;
 }
 
 .board-col-label {
@@ -512,21 +601,25 @@ html, body {
   letter-spacing: 0.08em;
   color: var(--text-muted);
   user-select: none;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .board-col-label.best-col {
   color: var(--color-best);
 }
 
-/* Drop arrow row */
+.board-col-label.hover-col {
+  color: var(--accent-blue-lt);
+}
+
+/* ---------- Drop arrow row (above board) ---------- */
 .drop-arrow-row {
   display: grid;
-  grid-template-columns: repeat(9, var(--cell-size));
+  grid-template-columns: repeat(var(--board-cols), var(--cell-size));
   gap: var(--cell-gap);
-  height: 28px;
-  margin-bottom: 4px;
-  padding: 0 4px;
+  height: 26px;
+  margin-bottom: 5px;
+  padding: 0 22px;
   align-items: end;
 }
 
@@ -536,92 +629,120 @@ html, body {
   justify-content: center;
   height: 100%;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.18s ease;
   pointer-events: none;
   color: var(--color-best);
-  font-size: 18px;
-  filter: drop-shadow(0 0 6px var(--color-best-glow));
+  font-size: 17px;
+  /* Unicode ▼ is used by JS; drop-shadow adds the glow */
+  filter: drop-shadow(0 0 5px var(--color-best-glow));
 }
 
 .drop-arrow.visible {
   opacity: 1;
-  animation: arrowBounce 0.9s ease-in-out infinite;
+  animation: arrowBounce 0.85s ease-in-out infinite;
 }
 
 @keyframes arrowBounce {
-  0%, 100% { transform: translateY(0); }
+  0%, 100% { transform: translateY(0);   }
   50%       { transform: translateY(5px); }
 }
 
-/* Board wrapper — handles hover column highlighting */
+/* ---------- Board wrapper (outer frame / raised surface) ---------- */
 .board-wrapper {
   position: relative;
   padding: 12px;
-  background: linear-gradient(145deg, #20325a, #142035);
+  background: linear-gradient(150deg, #213260 0%, #142035 100%);
   border-radius: 16px;
   box-shadow:
     var(--shadow-depth),
-    inset 0 1px 0 rgba(255,255,255,0.06),
-    0 0 0 1px rgba(255,255,255,0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
-/* The grid itself */
+/* ---------- The grid itself (9 × 7) ---------- */
 .board-grid {
   display: grid;
-  grid-template-columns: repeat(9, var(--cell-size));
-  grid-template-rows: repeat(7, var(--cell-size));
+  grid-template-columns: repeat(var(--board-cols), var(--cell-size));
+  grid-template-rows:    repeat(var(--board-rows), var(--cell-size));
   gap: var(--cell-gap);
   background: var(--bg-board);
   border-radius: 10px;
   padding: 10px;
   position: relative;
+  /* Ensure z-index stacking context for overlay */
+  isolation: isolate;
 }
 
-/* Column hover overlay — injected via JS or :has() on columns */
-.board-grid::after {
-  content: '';
+/* ---------- Best-move column overlay strip (positioned by JS) ---------- */
+.col-best-overlay {
   position: absolute;
-  inset: 0;
-  border-radius: 10px;
+  top: 10px;
+  bottom: 10px;
+  border-radius: 8px;
+  background: rgba(39, 174, 96, 0.065);
+  border: 1px solid rgba(39, 174, 96, 0.24);
   pointer-events: none;
-  background: transparent;
-  transition: background 0.2s;
+  z-index: 1;
+  transition:
+    left    0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    width   0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.25s ease;
+  box-shadow:
+    0 0 22px rgba(39, 174, 96, 0.20),
+    inset 0 0 8px rgba(39, 174, 96, 0.10);
 }
 
-/* Individual cell */
+/* ---------- Column containers (optional — if JS wraps each col) ---------- */
+.board-col {
+  display: contents; /* transparent to grid layout */
+}
+
+/* When JS adds .col-hover class to a column wrapper or to cells via data attr */
+.col-hover-highlight .cell {
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, 0.50),
+    0 0 16px rgba(84, 160, 255, 0.14);
+}
+
+/* ----------------------------------------------------------
+   Cells
+   ---------------------------------------------------------- */
 .cell {
   width: var(--cell-size);
   height: var(--cell-size);
   border-radius: 50%;
   background: var(--bg-cell-empty);
   box-shadow:
-    inset 0 3px 8px rgba(0,0,0,0.6),
-    inset 0 1px 2px rgba(0,0,0,0.4);
+    inset 0 3px 9px rgba(0, 0, 0, 0.65),
+    inset 0 1px 2px rgba(0, 0, 0, 0.40);
   position: relative;
   cursor: pointer;
-  transition: box-shadow 0.15s ease;
+  transition: box-shadow 0.14s ease;
   overflow: visible;
+  /* Cells need their own stacking context for drop animation */
+  z-index: 0;
 }
 
-/* Empty cell hover */
-.cell.hoverable:hover {
+/* Hoverable empty cell — subtle rim light */
+.cell.hoverable:hover,
+.cell[data-col-hover]:hover {
   box-shadow:
-    inset 0 3px 8px rgba(0,0,0,0.5),
-    0 0 12px rgba(255,255,255,0.06);
+    inset 0 3px 8px rgba(0, 0, 0, 0.50),
+    0 0 14px rgba(255, 255, 255, 0.07);
 }
 
-/* Column hover highlight */
-.col-hover .cell {
+/* Column hover highlight (JS adds data-col-hover to all cells in that col) */
+.cell[data-col-hover] {
   box-shadow:
-    inset 0 3px 8px rgba(0,0,0,0.5),
-    0 0 14px rgba(84,160,255,0.15);
+    inset 0 3px 8px rgba(0, 0, 0, 0.50),
+    0 0 14px rgba(84, 160, 255, 0.15);
 }
 
-/* Best move column */
-.col-best .cell {
+/* Best move column cells */
+.cell[data-best-col] {
   box-shadow:
-    inset 0 3px 8px rgba(0,0,0,0.4),
-    0 0 18px var(--color-best-glow);
+    inset 0 3px 8px rgba(0, 0, 0, 0.42),
+    0 0 20px var(--color-best-glow);
 }
 
 /* ----------------------------------------------------------
@@ -632,24 +753,33 @@ html, body {
   cursor: default;
 }
 
+/* Red piece */
 .cell.p1 {
-  background: radial-gradient(circle at 35% 30%, var(--color-p1-light) 0%, var(--color-p1) 55%, var(--color-p1-dark) 100%);
+  background: radial-gradient(circle at 34% 30%,
+    var(--color-p1-light) 0%,
+    var(--color-p1)       55%,
+    var(--color-p1-dark)  100%);
   box-shadow:
-    inset 0 -3px 6px rgba(0,0,0,0.35),
-    inset 0 3px 6px rgba(255,255,255,0.15),
-    0 3px 10px rgba(231,76,60,0.4);
+    inset 0 -3px 7px rgba(0, 0, 0, 0.38),
+    inset 0  3px 7px rgba(255, 255, 255, 0.18),
+    0 3px 10px rgba(231, 76, 60, 0.42);
 }
 
+/* Yellow piece */
 .cell.p2 {
-  background: radial-gradient(circle at 35% 30%, var(--color-p2-light) 0%, var(--color-p2) 55%, var(--color-p2-dark) 100%);
+  background: radial-gradient(circle at 34% 30%,
+    var(--color-p2-light) 0%,
+    var(--color-p2)       55%,
+    var(--color-p2-dark)  100%);
   box-shadow:
-    inset 0 -3px 6px rgba(0,0,0,0.35),
-    inset 0 3px 6px rgba(255,255,255,0.2),
-    0 3px 10px rgba(241,196,15,0.35);
+    inset 0 -3px 7px rgba(0, 0, 0, 0.38),
+    inset 0  3px 7px rgba(255, 255, 255, 0.22),
+    0 3px 10px rgba(241, 196, 15, 0.38);
 }
 
 /* ----------------------------------------------------------
    Piece Drop Animation
+   JS sets --drop-rows on the cell before adding .dropping
    ---------------------------------------------------------- */
 .cell.dropping {
   animation: pieceDrop 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
@@ -657,14 +787,16 @@ html, body {
 
 @keyframes pieceDrop {
   0% {
-    transform: translateY(calc(-1 * (var(--drop-rows, 3) * (var(--cell-size) + var(--cell-gap)))));
-    opacity: 0.7;
+    transform: translateY(calc(
+      -1 * var(--drop-rows, 3) * (var(--cell-size) + var(--cell-gap))
+    ));
+    opacity: 0.65;
   }
-  70% {
-    transform: translateY(4px);
+  68% {
+    transform: translateY(5px);
     opacity: 1;
   }
-  85% {
+  84% {
     transform: translateY(-3px);
   }
   100% {
@@ -674,36 +806,35 @@ html, body {
 }
 
 /* ----------------------------------------------------------
-   Winning Pieces — Pulsing Glow
+   Winning Pieces — pulsing glow
    ---------------------------------------------------------- */
 .cell.winning {
-  animation: winPulse 1.1s ease-in-out infinite;
-  z-index: 2;
+  z-index: 3;
 }
 
 .cell.p1.winning {
-  animation: winPulseP1 1.1s ease-in-out infinite;
+  animation: winPulseP1 1.10s ease-in-out infinite;
 }
 
 .cell.p2.winning {
-  animation: winPulseP2 1.1s ease-in-out infinite;
+  animation: winPulseP2 1.10s ease-in-out infinite;
 }
 
 @keyframes winPulseP1 {
   0%, 100% {
     box-shadow:
-      inset 0 -3px 6px rgba(0,0,0,0.35),
-      inset 0 3px 6px rgba(255,255,255,0.15),
+      inset 0 -3px 7px rgba(0, 0, 0, 0.38),
+      inset 0  3px 7px rgba(255, 255, 255, 0.18),
       0 0 14px 4px var(--color-win-glow-p1),
-      0 3px 10px rgba(231,76,60,0.6);
+      0 3px 12px rgba(231, 76, 60, 0.60);
     transform: scale(1);
   }
   50% {
     box-shadow:
-      inset 0 -3px 6px rgba(0,0,0,0.2),
-      inset 0 3px 8px rgba(255,255,255,0.25),
-      0 0 28px 10px var(--color-win-glow-p1),
-      0 4px 18px rgba(231,76,60,0.8);
+      inset 0 -3px 7px rgba(0, 0, 0, 0.22),
+      inset 0  3px 9px rgba(255, 255, 255, 0.28),
+      0 0 30px 11px var(--color-win-glow-p1),
+      0 4px 20px rgba(231, 76, 60, 0.82);
     transform: scale(1.07);
   }
 }
@@ -711,49 +842,35 @@ html, body {
 @keyframes winPulseP2 {
   0%, 100% {
     box-shadow:
-      inset 0 -3px 6px rgba(0,0,0,0.35),
-      inset 0 3px 6px rgba(255,255,255,0.2),
+      inset 0 -3px 7px rgba(0, 0, 0, 0.38),
+      inset 0  3px 7px rgba(255, 255, 255, 0.22),
       0 0 14px 4px var(--color-win-glow-p2),
-      0 3px 10px rgba(241,196,15,0.5);
+      0 3px 12px rgba(241, 196, 15, 0.52);
     transform: scale(1);
   }
   50% {
     box-shadow:
-      inset 0 -3px 6px rgba(0,0,0,0.2),
-      inset 0 3px 8px rgba(255,255,255,0.3),
-      0 0 28px 10px var(--color-win-glow-p2),
-      0 4px 18px rgba(241,196,15,0.75);
+      inset 0 -3px 7px rgba(0, 0, 0, 0.22),
+      inset 0  3px 9px rgba(255, 255, 255, 0.32),
+      0 0 30px 11px var(--color-win-glow-p2),
+      0 4px 20px rgba(241, 196, 15, 0.78);
     transform: scale(1.07);
   }
 }
 
 /* ----------------------------------------------------------
-   Best Move Column Glow on Board
-   ---------------------------------------------------------- */
-.col-best-overlay {
-  position: absolute;
-  top: 10px;
-  bottom: 10px;
-  border-radius: 8px;
-  background: rgba(39,174,96,0.06);
-  border: 1px solid rgba(39,174,96,0.22);
-  pointer-events: none;
-  transition: left 0.25s ease, width 0.25s ease, opacity 0.3s ease;
-  box-shadow: 0 0 20px rgba(39,174,96,0.18);
-}
-
-/* ----------------------------------------------------------
-   Move History / Score Bar (optional footer in board area)
+   Board Footer — score bar + move history
    ---------------------------------------------------------- */
 .board-footer {
   margin-top: 18px;
   width: 100%;
-  max-width: calc(9 * var(--cell-size) + 8 * var(--cell-gap) + 24px);
+  max-width: calc(var(--board-inner-width) + 24px);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
+/* Score bar */
 .score-bar-wrap {
   background: var(--bg-panel-inner);
   border: 1px solid var(--border-subtle);
@@ -771,14 +888,14 @@ html, body {
   text-transform: uppercase;
   color: var(--text-muted);
   white-space: nowrap;
-  min-width: 60px;
+  min-width: 58px;
 }
 
 .score-bar-track {
   flex: 1;
   height: 8px;
   border-radius: 4px;
-  background: #0d1b2e;
+  background: var(--bg-cell-empty);
   overflow: hidden;
   position: relative;
 }
@@ -786,9 +903,9 @@ html, body {
 .score-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--color-p1), var(--color-p2));
+  background: linear-gradient(90deg, var(--color-p1) 0%, var(--color-p2) 100%);
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 50%;
+  width: 50%; /* updated by JS */
 }
 
 .score-bar-value {
@@ -822,7 +939,7 @@ html, body {
   color: var(--text-secondary);
   cursor: default;
   user-select: none;
-  transition: background 0.15s;
+  transition: background 0.14s ease;
 }
 
 .move-chip:hover {
@@ -830,40 +947,27 @@ html, body {
   color: var(--text-primary);
 }
 
-.move-chip .chip-dot {
+.move-chip.current {
+  border-color: var(--accent-blue-lt);
+  background: rgba(46, 134, 222, 0.12);
+  color: var(--accent-blue-lt);
+}
+
+.chip-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.move-chip .chip-dot.p1 {
+.chip-dot.p1 {
   background: var(--color-p1);
   box-shadow: 0 0 4px var(--color-p1);
 }
 
-.move-chip .chip-dot.p2 {
+.chip-dot.p2 {
   background: var(--color-p2);
   box-shadow: 0 0 4px var(--color-p2);
-}
-
-.move-chip.current {
-  border-color: var(--accent-blue-lt);
-  background: rgba(46,134,222,0.12);
-  color: var(--accent-blue-lt);
-}
-
-/* ----------------------------------------------------------
-   Auto-play Toggle State
-   ---------------------------------------------------------- */
-.btn-autoplay.active {
-  background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
-  box-shadow: 0 2px 10px rgba(142,68,173,0.4);
-}
-
-.btn-autoplay.active:hover:not(:disabled) {
-  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-  box-shadow: 0 4px 16px rgba(155,89,182,0.5);
 }
 
 /* ----------------------------------------------------------
@@ -888,25 +992,26 @@ html, body {
 }
 
 /* ----------------------------------------------------------
-   Overlay / Modal (win screen, etc.)
+   Win / Game-over Overlay & Modal
    ---------------------------------------------------------- */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 200;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.28s ease;
 }
 
 .overlay.visible {
   opacity: 1;
-  pointer-events: all;
+  pointer-events: auto;
 }
 
 .modal {
@@ -916,10 +1021,10 @@ html, body {
   padding: 32px 36px;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.7);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.72);
   text-align: center;
-  transform: scale(0.92) translateY(16px);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: scale(0.91) translateY(18px);
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .overlay.visible .modal {
@@ -930,6 +1035,7 @@ html, body {
   font-size: 48px;
   margin-bottom: 12px;
   display: block;
+  line-height: 1;
 }
 
 .modal h2 {
@@ -966,31 +1072,28 @@ html, body {
   white-space: nowrap !important;
 }
 
-.text-p1  { color: var(--color-p1-light); }
-.text-p2  { color: var(--color-p2); }
-.text-muted { color: var(--text-muted); }
-.text-best  { color: var(--color-best); }
+.text-p1   { color: var(--color-p1-light); }
+.text-p2   { color: var(--color-p2);       }
+.text-muted { color: var(--text-muted);    }
+.text-best  { color: var(--color-best);    }
 .font-mono  { font-family: 'Fira Code', 'Consolas', monospace; }
 .fw-bold    { font-weight: 700; }
+.mt-8       { margin-top: 8px; }
+.mt-12      { margin-top: 12px; }
 
 /* ----------------------------------------------------------
-   Responsive — screens >= 900px nominal target
+   Responsive
    ---------------------------------------------------------- */
 
-/* Medium: allow board area to scroll */
+/* Medium — allow board area to scroll horizontally */
 @media (max-width: 960px) {
   .board-area {
     padding: 20px 12px;
-    overflow-x: auto;
     align-items: flex-start;
-  }
-
-  .board-area-inner {
-    min-width: calc(9 * var(--cell-size) + 8 * var(--cell-gap) + 48px);
   }
 }
 
-/* Narrow: stack panel above board */
+/* Narrow — stack panel above board at < 900px */
 @media (max-width: 900px) {
   .app-container {
     flex-direction: column;
@@ -1001,9 +1104,11 @@ html, body {
     min-width: 0;
     max-width: 100%;
     min-height: unset;
+    max-height: unset;
+    position: static;
     border-right: none;
     border-bottom: 1px solid var(--border-panel);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.30);
   }
 
   .btn-group,
@@ -1023,13 +1128,48 @@ html, body {
     width: 100%;
     align-items: flex-start;
   }
+
+  .engine-info-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-/* Touch / hover detection */
+/* Touch devices — disable hover effects on cells */
 @media (hover: none) {
-  .cell:hover {
+  .cell:hover,
+  .cell[data-col-hover]:hover,
+  .cell.hoverable:hover {
     box-shadow:
-      inset 0 3px 8px rgba(0,0,0,0.6),
-      inset 0 1px 2px rgba(0,0,0,0.4);
+      inset 0 3px 9px rgba(0, 0, 0, 0.65),
+      inset 0 1px 2px rgba(0, 0, 0, 0.40);
+  }
+}
+
+/* ----------------------------------------------------------
+   Reduced Motion
+   ---------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .cell.dropping {
+    animation: none;
+    transform: none;
+  }
+
+  .cell.p1.winning,
+  .cell.p2.winning {
+    animation: none;
+  }
+
+  .drop-arrow.visible {
+    animation: none;
+  }
+
+  .spinner {
+    animation: none;
+    border-top-color: var(--accent-blue-lt);
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration:  0.01ms !important;
   }
 }
