@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect 5 Solver</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Side Panel -->
+    <aside id="side-panel">
+      <h1 class="logo">Connect <span class="five">5</span> Solver</h1>
+
+      <!-- Side to move -->
+      <div class="panel-section" id="side-to-move-section">
+        <div class="section-label">Side to move</div>
+        <div class="side-selector">
+          <button id="btn-side-1" class="side-btn active" data-player="1">
+            <span class="piece-dot red"></span> Red
+          </button>
+          <button id="btn-side-2" class="side-btn" data-player="2">
+            <span class="piece-dot yellow"></span> Yellow
+          </button>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="panel-section">
+        <div id="status-msg" class="status-msg">Click a column to place a piece.</div>
+      </div>
+
+      <!-- Engine stats -->
+      <div class="panel-section engine-stats" id="engine-stats">
+        <div class="section-label">Engine Analysis</div>
+        <div class="stat-row">
+          <span class="stat-label">Score</span>
+          <span class="stat-value" id="stat-score">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Depth</span>
+          <span class="stat-value" id="stat-depth">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Nodes</span>
+          <span class="stat-value" id="stat-nodes">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Time</span>
+          <span class="stat-value" id="stat-time">—</span>
+        </div>
+      </div>
+
+      <!-- Principal variation -->
+      <div class="panel-section">
+        <div class="section-label">Principal Variation</div>
+        <div id="pv-display" class="pv-display">—</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="panel-section actions">
+        <button id="btn-analyze" class="btn btn-primary">&#x1F50D; Analyze</button>
+        <button id="btn-autoplay" class="btn btn-success">&#x25B6; Auto-play Best</button>
+        <button id="btn-undo" class="btn btn-secondary">&#x21A9; Undo</button>
+        <button id="btn-reset" class="btn btn-danger">&#x21BA; Reset</button>
+      </div>
+
+      <!-- Depth slider -->
+      <div class="panel-section">
+        <div class="section-label">Search Depth: <span id="depth-label">10</span></div>
+        <input type="range" id="depth-slider" min="1" max="20" value="10" class="slider" />
+        <div class="section-label" style="margin-top:8px">Time Limit: <span id="time-label">5</span>s</div>
+        <input type="range" id="time-slider" min="1" max="30" value="5" class="slider" />
+      </div>
+
+      <!-- Move list -->
+      <div class="panel-section">
+        <div class="section-label">Move History</div>
+        <div id="move-history" class="move-history"></div>
+      </div>
+    </aside>
+
+    <!-- Board area -->
+    <main id="board-area">
+      <div id="col-arrows" class="col-arrows">
+        <!-- Arrow indicators rendered by JS -->
+      </div>
+      <div id="board" class="board"></div>
+      <div id="thinking-overlay" class="thinking-overlay hidden">
+        <div class="spinner"></div>
+        <div class="thinking-text">Analyzing…</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="solver.js"></script>
+  <script>
+  (() => {
+    'use strict';
+
+    const E = window.Connect5Engine;
+    const { COLS, ROWS } = E;
+
+    // ── State ──────────────────────────────────────────────────────────────
+    let board = E.createBoard();
+    let currentPlayer = 1;
+    let gameOver = false;
+    let lastAnalysis = null;
+    let bestMoveCol = -1;
+    let winningCells = [];
+    let autoPlayInterval = null;
+
+    // ── DOM refs ───────────────────────────────────────────────────────────
+    const boardEl      = document.getElementById('board');
+    const arrowsEl     = document.getElementById('col-arrows');
+    const statusEl     = document.getElementById('status-msg');
+    const pvEl         = document.getElementById('pv-display');
+    const statScore    = document.getElementById('stat-score');
+    const statDepth    = document.getElementById('stat-depth');
+    const statNodes    = document.getElementById('stat-nodes');
+    const statTime     = document.getElementById('stat-time');
+    const moveHistEl   = document.getElementById('move-history');
+    const thinkOverlay = document.getElementById('thinking-overlay');
+    const depthSlider  = document.getElementById('depth-slider');
+    const timeSlider   = document.getElementById('time-slider');
+    const depthLabel   = document.getElementById('depth-label');
+    const timeLabel    = document.getElementById('time-label');
+    const btnAnalyze   = document.getElementById('btn-analyze');
+    const btnAutoplay  = document.getElementById('btn-autoplay');
+    const btnUndo      = document.getElementById('btn-undo');
+    const btnReset     = document.getElementById('btn-reset');
+    const btnSide1     = document.getElementById('btn-side-1');
+    const btnSide2     = document.getElementById('btn-side-2');
+
+    // ── Build board DOM ────────────────────────────────────────────────────
+    function buildBoard() {
+      boardEl.innerHTML = '';
+      arrowsEl.innerHTML = '';
+      boardEl.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
+
+      // Arrows row
+      for (let c = 0; c < COLS; c++) {
+        const arrow = document.createElement('div');
+        arrow.className = 'col-arrow';
+        arrow.id = `arrow-${c}`;
+        arrow.textContent = '▼';
+        arrowsEl.appendChild(arrow);
+      }
+
+      // Cells: row 0 = top, row ROWS-1 = bottom
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.col = c;
+          cell.dataset.row = r;
+          cell.id = `cell-${r}-${c}`;
+          boardEl.appendChild(cell);
+        }
+      }
+
+      // Column click zones (invisible overlays spanning full column height)
+      for (let c = 0; c < COLS; c++) {
+        const zone = document.createElement('div');
+        zone.className = 'col-zone';
+        zone.dataset.col = c;
+        zone.style.gridColumn = `${c + 1}`;
+        zone.style.gridRow = `1 / ${ROWS + 1}`;
+        boardEl.appendChild(zone);
+      }
+    }
+
+    function renderBoard() {
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = document.getElementById(`cell-${r}-${c}`);
+          const idx = r * COLS + c;
+          const val = board.cells[idx];
+          cell.className = 'cell';
+          if (val === 1) cell.classList.add('p1');
+          else if (val === 2) cell.classList.add('p2');
+          if (winningCells.some(([wr, wc]) => wr === r && wc === c)) {
+            cell.classList.add('winning');
+          }
+        }
+      }
+
+      // Arrows
+      for (let c = 0; c < COLS; c++) {
+        const arrow = document.getElementById(`arrow-${c}`);
+        arrow.className = 'col-arrow';
+        if (!E.isValidMove(board, c)) arrow.classList.add('invalid');
+        if (c === bestMoveCol && !gameOver) arrow.classList.add('best');
+      }
+
+      // Move history
+      moveHistEl.innerHTML = '';
+      for (let i = 0; i < board.history.length; i++) {
+        const span = document.createElement('span');
+        const col = board.history[i];
+        const player = (i % 2 === 0) ? 1 : 2;
+        span.className = `move-chip ${player === 1 ? 'p1' : 'p2'}`;
+        span.textContent = `${Math.floor(i/2)+1}${player===1?'.':'…'}c${col+1}`;
+        moveHistEl.appendChild(span);
+      }
+    }
+
+    function updateSideIndicator() {
+      btnSide1.classList.toggle('active', currentPlayer === 1);
+      btnSide2.classList.toggle('active', currentPlayer === 2);
+    }
+
+    // ── Move logic ─────────────────────────────────────────────────────────
+    function placeMove(col) {
+      if (gameOver || !E.isValidMove(board, col)) return;
+
+      // Temporarily set board's currentPlayer
+      board.currentPlayer = currentPlayer;
+      const ok = E.makeMove(board, col);
+      if (!ok) return;
+
+      bestMoveCol = -1;
+      lastAnalysis = null;
+      clearAnalysisDisplay();
+
+      const winner = E.getWinner(board);
+      if (winner) {
+        gameOver = true;
+        winningCells = getWinningCells(board, col);
+        renderBoard();
+        const name = winner === 1 ? 'Red' : 'Yellow';
+        setStatus(`${name} wins! 🎉`);
+        return;
+      }
+      if (E.isDraw(board)) {
+        gameOver = true;
+        renderBoard();
+        setStatus('Draw! Board is full.');
+        return;
+      }
+
+      currentPlayer = currentPlayer === 1 ? 2 : 1;
+      updateSideIndicator();
+      renderBoard();
+      setStatus(`${currentPlayer === 1 ? 'Red' : 'Yellow'} to move.`);
+    }
+
+    function undoMove() {
+      if (board.history.length === 0) return;
+      E.undoMove(board);
+      gameOver = false;
+      winningCells = [];
+      bestMoveCol = -1;
+      lastAnalysis = null;
+      currentPlayer = currentPlayer === 1 ? 2 : 1;
+      updateSideIndicator();
+      clearAnalysisDisplay();
+      renderBoard();
+      setStatus(`${currentPlayer === 1 ? 'Red' : 'Yellow'} to move.`);
+    }
+
+    function resetBoard() {
+      board = E.createBoard();
+      gameOver = false;
+      winningCells = [];
+      bestMoveCol = -1;
+      lastAnalysis = null;
+      currentPlayer = 1;
+      updateSideIndicator();
+      clearAnalysisDisplay();
+      renderBoard();
+      setStatus('Board reset. Red to move.');
+    }
+
+    // ── Analysis ───────────────────────────────────────────────────────────
+    function getMaxDepth() { return parseInt(depthSlider.value, 10); }
+    function getTimeLimit() { return parseInt(timeSlider.value, 10) * 1000; }
+
+    function setThinking(on) {
+      thinkOverlay.classList.toggle('hidden', !on);
+      btnAnalyze.disabled = on;
+      btnAutoplay.disabled = on;
+    }
+
+    async function runAnalysis() {
+      if (gameOver) return;
+      setThinking(true);
+      setStatus('Analyzing…');
+
+      await new Promise(r => setTimeout(r, 10)); // yield to repaint
+
+      board.currentPlayer = currentPlayer;
+      const result = E.analyze(board, currentPlayer, getMaxDepth(), getTimeLimit());
+
+      lastAnalysis = result;
+      bestMoveCol = result.bestMove;
+
+      statScore.textContent = formatScore(result.score, currentPlayer);
+      statDepth.textContent = result.depth;
+      statNodes.textContent = result.nodes.toLocaleString();
+      statTime.textContent  = (result.timeMs / 1000).toFixed(2) + 's';
+
+      if (result.pv && result.pv.length > 0) {
+        pvEl.textContent = result.pv.map(c => `c${c+1}`).join(' → ');
+      } else {
+        pvEl.textContent = '—';
+      }
+
+      renderBoard();
+      setThinking(false);
+
+      if (bestMoveCol >= 0) {
+        setStatus(`Best move: column ${bestMoveCol + 1}  (score: ${formatScore(result.score, currentPlayer)})`);
+      } else {
+        setStatus('Analysis complete.');
+      }
+    }
+
+    async function autoPlay() {
+      if (gameOver) return;
+      setThinking(true);
+
+      board.currentPlayer = currentPlayer;
+      const result = E.analyze(board, currentPlayer, getMaxDepth(), getTimeLimit());
+
+      lastAnalysis = result;
+      bestMoveCol = result.bestMove;
+      statScore.textContent = formatScore(result.score, currentPlayer);
+      statDepth.textContent = result.depth;
+      statNodes.textContent = result.nodes.toLocaleString();
+      statTime.textContent  = (result.timeMs / 1000).toFixed(2) + 's';
+      if (result.pv && result.pv.length > 0) {
+        pvEl.textContent = result.pv.map(c => `c${c+1}`).join(' → ');
+      }
+
+      setThinking(false);
+
+      if (result.bestMove >= 0) {
+        placeMove(result.bestMove);
+      }
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────────────
+    function formatScore(score, player) {
+      if (score > 900000) return `+M${Math.ceil((1000000 - score) / 2)}`;
+      if (score < -900000) return `-M${Math.ceil((1000000 + score) / 2)}`;
+      return (score >= 0 ? '+' : '') + score;
+    }
+
+    function clearAnalysisDisplay() {
+      statScore.textContent = '—';
+      statDepth.textContent = '—';
+      statNodes.textContent = '—';
+      statTime.textContent  = '—';
+      pvEl.textContent = '—';
+    }
+
+    function setStatus(msg) {
+      statusEl.textContent = msg;
+    }
+
+    function getWinningCells(board, lastCol) {
+      const lastRow = board.heights[lastCol] - 1;
+      const player = board.cells[lastRow * COLS + lastCol];
+      const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+      for (const [dr, dc] of dirs) {
+        const line = [[lastRow, lastCol]];
+        for (let s of [-1, 1]) {
+          let r = lastRow + s * dr, c = lastCol + s * dc;
+          while (r >= 0 && r < ROWS && c >= 0 && c < COLS && board.cells[r*COLS+c] === player) {
+            line.push([r, c]);
+            r += s * dr; c += s * dc;
+          }
+        }
+        if (line.length >= 5) return line;
+      }
+      return [];
+    }
+
+    // ── Event wiring ────────────────────────────────────────────────────────
+    boardEl.addEventListener('click', e => {
+      const zone = e.target.closest('.col-zone');
+      if (zone) {
+        placeMove(parseInt(zone.dataset.col, 10));
+        return;
+      }
+      const cell = e.target.closest('.cell');
+      if (cell) placeMove(parseInt(cell.dataset.col, 10));
+    });
+
+    boardEl.addEventListener('mouseover', e => {
+      const el = e.target.closest('.col-zone, .cell');
+      if (!el) return;
+      const col = parseInt(el.dataset.col, 10);
+      document.querySelectorAll('.col-arrow').forEach((a, i) => {
+        a.classList.toggle('hover', i === col);
+      });
+      document.querySelectorAll('.cell').forEach(c => {
+        c.classList.toggle('col-hover', parseInt(c.dataset.col, 10) === col);
+      });
+    });
+
+    boardEl.addEventListener('mouseleave', () => {
+      document.querySelectorAll('.col-arrow').forEach(a => a.classList.remove('hover'));
+      document.querySelectorAll('.cell').forEach(c => c.classList.remove('col-hover'));
+    });
+
+    btnAnalyze.addEventListener('click', runAnalysis);
+    btnAutoplay.addEventListener('click', autoPlay);
+    btnUndo.addEventListener('click', undoMove);
+    btnReset.addEventListener('click', resetBoard);
+
+    btnSide1.addEventListener('click', () => {
+      currentPlayer = 1;
+      updateSideIndicator();
+      setStatus('Red to move.');
+    });
+    btnSide2.addEventListener('click', () => {
+      currentPlayer = 2;
+      updateSideIndicator();
+      setStatus('Yellow to move.');
+    });
+
+    depthSlider.addEventListener('input', () => {
+      depthLabel.textContent = depthSlider.value;
+    });
+    timeSlider.addEventListener('input', () => {
+      timeLabel.textContent = timeSlider.value;
+    });
+
+    // ── Init ────────────────────────────────────────────────────────────────
+    buildBoard();
+    renderBoard();
+    updateSideIndicator();
+    setStatus('Red to move. Click a column to place a piece.');
+  })();
+  </script>
+</body>
+</html>
